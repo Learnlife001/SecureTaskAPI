@@ -1,21 +1,21 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from sqlalchemy.orm import Session
-from jose import JWTError, jwt
 import os
 
+from core.security import create_access_token, hash_password, verify_password
 from db.database import get_db
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from jose import JWTError, jwt
 from models.user import User
-from schemas.user import UserCreate, UserResponse, Token
-from core.security import hash_password, verify_password, create_access_token
+from schemas.user import Token, UserCreate, UserResponse
+from sqlalchemy.orm import Session
 
 router = APIRouter(tags=["Auth"])
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
+
 def get_current_user(
-    token: str = Depends(oauth2_scheme),
-    db: Session = Depends(get_db)
+    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
 ):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -24,9 +24,7 @@ def get_current_user(
 
     try:
         payload = jwt.decode(
-            token,
-            os.getenv("SECRET_KEY", "dev_secret"),
-            algorithms=["HS256"]
+            token, os.getenv("SECRET_KEY", "dev_secret"), algorithms=["HS256"]
         )
 
         email: str = payload.get("sub")
@@ -42,15 +40,16 @@ def get_current_user(
 
     return user
 
+
 def get_admin_user(current_user: User = Depends(get_current_user)):
 
     if not current_user.is_admin:
         raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Admin access required"
+            status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required"
         )
 
     return current_user
+
 
 @router.post("/register", response_model=UserResponse)
 def register(user: UserCreate, db: Session = Depends(get_db)):
@@ -73,21 +72,18 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=Token)
 def login(
-    form_data: OAuth2PasswordRequestForm = Depends(),
-    db: Session = Depends(get_db)
+    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ):
     db_user = db.query(User).filter(User.email == form_data.username).first()
 
     if not db_user:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid credentials"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials"
         )
 
     if not verify_password(form_data.password, db_user.hashed_password):
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid credentials"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials"
         )
 
     access_token = create_access_token(data={"sub": db_user.email})

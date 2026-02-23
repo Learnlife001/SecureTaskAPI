@@ -1,5 +1,5 @@
-from sqlalchemy import Column, Integer, String, Boolean
 from db.database import Base
+from sqlalchemy import Boolean, Column, Integer, String
 
 
 class User(Base):
@@ -14,4 +14,3 @@ class User(Base):
     is_active = Column(Boolean, default=True)
 
     is_admin = Column(Boolean, default=False)
-    

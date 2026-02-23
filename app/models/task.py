@@ -1,8 +1,9 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Enum, Boolean
-from sqlalchemy.orm import relationship
-from db.database import Base
-from datetime import datetime
 import enum
+from datetime import datetime
+
+from db.database import Base
+from sqlalchemy import Boolean, Column, DateTime, Enum, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship
 
 
 class TaskStatus(str, enum.Enum):
