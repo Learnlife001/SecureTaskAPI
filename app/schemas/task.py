@@ -1,12 +1,15 @@
-from pydantic import BaseModel
-from typing import Optional
 from datetime import datetime
+from typing import Optional
+
 from models.task import TaskStatus
+from pydantic import BaseModel
+
 
 class TaskBase(BaseModel):
     title: str
     description: Optional[str] = None
     status: Optional[TaskStatus] = TaskStatus.pending
+
 
 class TaskCreate(TaskBase):
     pass

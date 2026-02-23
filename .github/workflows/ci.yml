@@ -24,6 +24,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r app/requirements.txt
 
+      - name: Lint
+        run: |
+          pip install flake8
+          flake8 app --max-line-length=100
+
       - name: Build Docker image
         run: |
           docker build -t securetaskapi ./app
+          
