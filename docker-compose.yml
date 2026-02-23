@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:16
+    container_name: securetask_db
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - securetask_network
+  
+  api:
+    build: ./app
+    container_name: securetask_api
+    restart: always
+    depends_on:
+      - db
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    networks:
+      - securetask_network
+
+volumes:
+  postgres_data:
+
+networks:
+  securetask_network:
+
