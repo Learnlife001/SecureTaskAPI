@@ -1,18 +1,17 @@
 import os
 import sys
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
 from logging.config import fileConfig
 
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
+from db.database import Base
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-
-import os
 
 database_url = os.getenv("DATABASE_URL")
 if database_url:
@@ -23,15 +22,10 @@ if database_url:
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-from db.database import Base
-from models.audit_log import AuditLog
-
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from models.task import Task
-from models.user import User
 
 target_metadata = Base.metadata
 

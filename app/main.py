@@ -1,8 +1,5 @@
-from db.database import Base, engine
 from fastapi import FastAPI
-from models.audit_log import AuditLog
 from routers import auth, tasks
-
 app = FastAPI()
 
 app.include_router(auth.router)
