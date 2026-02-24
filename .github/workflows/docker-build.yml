@@ -21,7 +21,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/securetaskapi:latest ./app
+          docker build -t ${{ secrets.AZURE_REGISTRY_LOGIN_SERVER }}/securetaskapi:latest .
 
       - name: Push Docker image
         run: |

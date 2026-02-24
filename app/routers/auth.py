@@ -1,3 +1,5 @@
+from unittest import result
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -54,6 +56,13 @@ def get_admin_user(current_user: User = Depends(get_current_user)):
 
 @router.post("/register", response_model=UserResponse)
 def register(user: UserCreate, db: Session = Depends(get_db)):
+
+    from sqlalchemy import text
+
+    result = db.execute(text("SELECT current_database();"))
+    print("CONNECTED DATABASE:", result.scalar())
+
+
 
     existing_user = db.query(User).filter(User.email == user.email).first()
     if existing_user:
