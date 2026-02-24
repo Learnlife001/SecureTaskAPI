@@ -1,7 +1,7 @@
 from fastapi import FastAPI
-from db.database import engine, Base
-from routers import auth, tasks
-from models.audit_log import AuditLog
+from app.db.database import engine, Base
+from app.routers import auth, tasks
+from app.models.audit_log import AuditLog
 
 app = FastAPI()
 

@@ -1,17 +1,12 @@
 fastapi
 uvicorn[standard]
 psycopg[binary]
-fastapi
-uvicorn[standard]
-psycopg[binary]
 sqlalchemy
 passlib[bcrypt]
 python-jose[cryptography]
 passlib[bcrypt]
 email-validator
 python-jose
-passlib[bcrypt]
-passlib[bcrypt]
 bcrypt==3.2.2
 python-jose
 email-validator
