@@ -26,4 +26,4 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t securetaskapi ./app
+          docker build -t securetaskapi .
