@@ -10,3 +10,9 @@ __pycache__/
 .venv
 test.db
 *.db
+
+
+__pycache__/
+*.pyd
+.venv/
+venv/
