@@ -68,10 +68,10 @@ uvicorn app.main:app –reload
 
 CI/CD Pipeline
 On every push to the main branch:
-1.	GitHub Actions builds the Docker image
-2.	The image is pushed to Azure Container Registry
-3.	Azure App Service pulls the updated image
-4.	The API is automatically redeployed
+1. GitHub Actions builds the Docker image
+2. The image is pushed to Azure Container Registry
+3. Azure App Service pulls the updated image
+4. The API is automatically redeployed
 This ensures automated and consistent production deployments.
 
 Production Lessons Learned
