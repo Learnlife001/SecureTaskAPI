@@ -8,7 +8,7 @@ config = context.config
 
 from app.core.config import settings
 
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+config.set_main_option("sqlalchemy.url", settings.sqlalchemy_database_url)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

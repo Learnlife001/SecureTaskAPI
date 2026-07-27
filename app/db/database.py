@@ -8,13 +8,13 @@ engine_options = {"echo": settings.DEBUG}
 
 # A single in-memory SQLite connection is required for the test client. Other
 # database URLs (including PostgreSQL in Docker) keep SQLAlchemy's defaults.
-if settings.DATABASE_URL.startswith("sqlite"):
+if settings.sqlalchemy_database_url.startswith("sqlite"):
     engine_options.update(
         connect_args={"check_same_thread": False},
         poolclass=StaticPool,
     )
 
-engine = create_engine(settings.DATABASE_URL, **engine_options)
+engine = create_engine(settings.sqlalchemy_database_url, **engine_options)
 
 SessionLocal = sessionmaker(
     bind=engine,

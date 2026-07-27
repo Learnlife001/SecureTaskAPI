@@ -25,5 +25,18 @@ class Settings(BaseSettings):
         extra="ignore"
     )
 
+    @property
+    def sqlalchemy_database_url(self) -> str:
+        """Return a PostgreSQL URL that explicitly uses the installed psycopg 3 driver."""
+        if self.DATABASE_URL.startswith("postgres://"):
+            return self.DATABASE_URL.replace(
+                "postgres://", "postgresql+psycopg://", 1
+            )
+        if self.DATABASE_URL.startswith("postgresql://"):
+            return self.DATABASE_URL.replace(
+                "postgresql://", "postgresql+psycopg://", 1
+            )
+        return self.DATABASE_URL
+
 
 settings = Settings()
