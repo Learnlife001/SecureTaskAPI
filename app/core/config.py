@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     # Pydantic v2 configuration
     model_config = SettingsConfigDict(
         env_file=".env",
+        env_prefix="SECURETASK_",
         case_sensitive=True,
         extra="ignore"
     )

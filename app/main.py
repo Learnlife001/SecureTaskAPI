@@ -1,9 +1,7 @@
 from fastapi import FastAPI
-from app.db.database import engine, Base
 from app.routers import auth, tasks
-from app.models.audit_log import AuditLog
 
-app = FastAPI()
+app = FastAPI(title="SecureTask API", version="1.0.0")
 
 app.include_router(auth.router)
 app.include_router(tasks.router)

@@ -1,15 +1,13 @@
-from unittest import result
-
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from jose import JWTError, jwt
-import os
 
 from app.db.database import get_db
 from app.models.user import User
 from app.schemas.user import UserCreate, UserResponse, Token
 from app.core.security import hash_password, verify_password, create_access_token
+from app.core.config import settings
 
 router = APIRouter(tags=["Auth"])
 
@@ -27,8 +25,8 @@ def get_current_user(
     try:
         payload = jwt.decode(
             token,
-            os.getenv("SECRET_KEY", "dev_secret"),
-            algorithms=["HS256"]
+            settings.SECRET_KEY,
+            algorithms=[settings.ALGORITHM],
         )
 
         email: str = payload.get("sub")
@@ -41,6 +39,11 @@ def get_current_user(
     user = db.query(User).filter(User.email == email).first()
     if user is None:
         raise credentials_exception
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Inactive user",
+        )
 
     return user
 
@@ -56,13 +59,6 @@ def get_admin_user(current_user: User = Depends(get_current_user)):
 
 @router.post("/register", response_model=UserResponse)
 def register(user: UserCreate, db: Session = Depends(get_db)):
-
-    from sqlalchemy import text
-
-    result = db.execute(text("SELECT current_database();"))
-    print("CONNECTED DATABASE:", result.scalar())
-
-
 
     existing_user = db.query(User).filter(User.email == user.email).first()
     if existing_user:
@@ -91,6 +87,12 @@ def login(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials"
+        )
+
+    if not db_user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Inactive user",
         )
 
     if not verify_password(form_data.password, db_user.hashed_password):

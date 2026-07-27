@@ -1,95 +1,55 @@
-SecureTask API
-SecureTask API is a production ready backend service built with FastAPI, PostgreSQL, Docker, and Microsoft Azure. The project demonstrates secure authentication, containerization, CI/CD automation, and real world cloud deployment practices.
+# SecureTask API
 
-Live Deployment
-Swagger Documentation
-https://securetaskapi-app-bnbybwgdhvhkhefd.eastus-01.azurewebsites.net/docs
+SecureTask API is a FastAPI task-management backend with JWT authentication,
+role-based access control, PostgreSQL, Docker, and Alembic migrations. It runs
+locally without Azure resources.
 
-Overview
-This project was designed to simulate a real world backend system with authentication, role based authorization, database integration, and automated deployment to the cloud.
-It showcases backend engineering fundamentals and infrastructure level deployment skills rather than just local development.
+## Features
 
-Features
-JWT authentication
-Role based access control
-Secure password hashing
-PostgreSQL database integration
-SQLAlchemy ORM
-Docker containerization
-Azure Container Registry integration
-Azure App Service deployment
-GitHub Actions CI/CD automation
-Environment variable based configuration
+- JWT authentication and bcrypt password hashing
+- User-owned tasks with administrator-only endpoints
+- PostgreSQL with SQLAlchemy and Alembic migrations
+- Docker Compose for a complete local environment
+- Tests and Docker image validation in GitHub Actions
 
-Architecture
-Client requests are handled by a FastAPI application.
-The application communicates with PostgreSQL using SQLAlchemy and psycopg.
-The application runs inside a Docker container.
-The container image is pushed to Azure Container Registry.
-Azure App Service pulls and runs the container image in production.
-GitHub Actions automates build and deployment on every push to the main branch.
+## Run locally with Docker
 
-Tech Stack
-Backend
-Python
-FastAPI
-SQLAlchemy
-psycopg
+1. Copy `.env.example` to `.env`.
+2. Replace `SECRET_KEY` and `POSTGRES_PASSWORD` with strong local values. The
+   password must match the password embedded in `DATABASE_URL`.
+3. Start the API and local PostgreSQL database:
 
-Database
-Azure PostgreSQL Flexible Server
+   ```bash
+   docker compose up --build
+   ```
 
-Cloud and DevOps
-Docker
-Azure Container Registry
-Azure App Service
-GitHub Actions
+The API is available at http://localhost:8000 and Swagger UI at
+http://localhost:8000/docs. Migrations run before the API begins serving
+requests.
 
-Security
-JWT
-Password hashing
-Role based authorization
-Environment variable configuration
+## Run without Docker
 
-Local Development Setup
-Clone the repository
-git clone https://github.com/Learnlife001/securetask-api.git
-cd securetask-api
+Create and activate a virtual environment, install `requirements.txt`, then
+set `SECURETASK_DATABASE_URL` and `SECURETASK_SECRET_KEY` in your environment
+(or in `.env`). Apply migrations and start the server:
 
-Create virtual environment
-python -m venv .venv
-..venv\Scripts\activate
+```bash
+alembic upgrade head
+uvicorn app.main:app --reload
+```
 
-Install dependencies
-pip install -r requirements.txt
+## Quality checks
 
-Run locally
-uvicorn app.main:app –reload
+```bash
+pytest -q
+docker build -t securetaskapi .
+```
 
-CI/CD Pipeline
-On every push to the main branch:
-1. GitHub Actions builds the Docker image
-2. The image is pushed to Azure Container Registry
-3. Azure App Service pulls the updated image
-4. The API is automatically redeployed
-This ensures automated and consistent production deployments.
+GitHub Actions runs the test suite and checks that the Docker image builds on
+pushes and pull requests targeting `main`.
 
-Production Lessons Learned
-Misconfigured environment variables can break production authentication
-Cloud database authentication requires strict configuration
-Container based deployment improves portability and reliability
-CI/CD automation eliminates manual deployment errors
-Logging and monitoring are critical for debugging production systems
+## Future improvements
 
-Future Improvements
-Refresh token implementation
-Rate limiting
-Admin dashboard
-Redis caching
-Monitoring and alerting integration
-  
-Author
-Chigozie Okuma
-GitHub: https://github.com/Learnlife001
-LinkedIn: https://www.linkedin.com/in/cjokuma23/
-Portfolio: https://learnlife-portfolio.vercel.app/
+- Refresh tokens
+- Rate limiting
+- Monitoring and alerting

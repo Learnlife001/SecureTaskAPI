@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
 from app.models.task import Task, TaskStatus
 from app.models.user import User
 from app.schemas.task import TaskCreate, TaskUpdate, TaskResponse
+from app.schemas.user import UserResponse
 from app.routers.auth import get_admin_user, get_current_user
 from app.models.audit_log import AuditLog
 
@@ -42,8 +43,8 @@ def create_task(
 
 @router.get("/", response_model=list[TaskResponse])
 def get_tasks(
-    skip: int = 0,
-    limit: int = 10,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100),
     status: TaskStatus | None = None,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -132,7 +133,7 @@ def delete_task(
 
     return {"message": "Task soft deleted"}
 
-@router.get("/admin/users", tags=["Admin"])
+@router.get("/admin/users", tags=["Admin"], response_model=list[UserResponse])
 def list_all_users(
     admin: User = Depends(get_admin_user),
     db: Session = Depends(get_db)

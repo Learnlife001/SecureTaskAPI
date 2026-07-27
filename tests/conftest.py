@@ -1,21 +1,21 @@
 import os
 
-os.environ["DATABASE_URL"] = "sqlite:///./test.db"
-os.environ["DEBUG"] = "False"
-os.environ["SECRET_KEY"] = "testsecret"
+os.environ["SECURETASK_DATABASE_URL"] = "sqlite://"
+os.environ["SECURETASK_DEBUG"] = "False"
+os.environ["SECURETASK_SECRET_KEY"] = "testsecret"
 
 
 import pytest
 from fastapi.testclient import TestClient
 
-from main import app
-from db.database import Base, engine
+from app.main import app
+from app.db.database import Base, engine
 
-import models
-
-Base.metadata.create_all(bind=engine)
-
+from app import models  # noqa: F401
 
 @pytest.fixture
 def client():
-    return TestClient(app)
+    Base.metadata.create_all(bind=engine)
+    with TestClient(app) as test_client:
+        yield test_client
+    Base.metadata.drop_all(bind=engine)

@@ -1,6 +1,6 @@
 fastapi
 uvicorn[standard]
-psycopg[binary]
+psycopg[binary]>=3.2.10,<4
 sqlalchemy
 passlib[bcrypt]
 python-jose[cryptography]
