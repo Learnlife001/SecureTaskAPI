@@ -10,6 +10,25 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: securetask_test
+          POSTGRES_USER: securetask
+          POSTGRES_PASSWORD: securetask
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U securetask -d securetask_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      SECURETASK_DATABASE_URL: postgresql+psycopg://securetask:securetask@localhost:5432/securetask_test
+      SECURETASK_SECRET_KEY: ci-test-secret-at-least-16-characters
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -25,10 +44,12 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run tests
-        env:
-          SECURETASK_DATABASE_URL: sqlite://
-          SECURETASK_SECRET_KEY: ci-test-secret
-        run: pytest -q
+        run: |
+          alembic upgrade head
+          pytest --cov=app --cov-report=term-missing --cov-fail-under=80
+
+      - name: Check formatting
+        run: black --check app tests
 
       - name: Build Docker image
         run: |

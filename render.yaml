@@ -6,7 +6,7 @@ services:
     plan: free
     dockerfilePath: ./Dockerfile
     dockerContext: .
-    healthCheckPath: /
+    healthCheckPath: /health/ready
     envVars:
       - key: SECURETASK_DATABASE_URL
         fromDatabase:

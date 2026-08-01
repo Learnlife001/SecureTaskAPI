@@ -3,7 +3,6 @@ from jose import jwt
 from datetime import datetime, timedelta, timezone
 from app.core.config import settings
 
-
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
@@ -24,8 +23,4 @@ def create_access_token(data: dict):
     )
     to_encode.update({"exp": expire})
 
-    return jwt.encode(
-        to_encode,
-        settings.SECRET_KEY,
-        algorithm=settings.ALGORITHM
-    )
+    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
