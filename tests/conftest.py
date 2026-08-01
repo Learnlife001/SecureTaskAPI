@@ -3,6 +3,8 @@ import os
 os.environ.setdefault("SECURETASK_DATABASE_URL", "sqlite://")
 os.environ.setdefault("SECURETASK_DEBUG", "False")
 os.environ.setdefault("SECURETASK_SECRET_KEY", "test-secret-key-at-least-16-characters")
+os.environ.setdefault("SECURETASK_METRICS_TOKEN", "test-metrics-token")
+os.environ.setdefault("SECURETASK_AUTH_RATE_LIMIT_REQUESTS", "100")
 
 
 import pytest

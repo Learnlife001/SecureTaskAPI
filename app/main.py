@@ -1,4 +1,6 @@
-from fastapi import FastAPI
+import secrets
+
+from fastapi import FastAPI, Header, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
@@ -49,5 +51,18 @@ def readiness():
 
 
 @app.get("/metrics", include_in_schema=False)
-def metrics():
+def metrics(x_metrics_token: str | None = Header(default=None)):
+    if not settings.METRICS_TOKEN:
+        if settings.ENVIRONMENT == "production":
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Metrics access is not configured",
+            )
+    elif not x_metrics_token or not secrets.compare_digest(
+        x_metrics_token, settings.METRICS_TOKEN
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid metrics token",
+        )
     return metrics_response()

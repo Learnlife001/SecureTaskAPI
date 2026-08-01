@@ -3,12 +3,10 @@ uvicorn[standard]
 psycopg[binary]>=3.2.10,<4
 sqlalchemy
 passlib[bcrypt]
-python-jose[cryptography]
+PyJWT==2.13.0
 passlib[bcrypt]
 email-validator
-python-jose
 bcrypt==3.2.2
-python-jose
 email-validator
 python-multipart
 pydantic-settings

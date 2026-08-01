@@ -10,9 +10,14 @@ def test_health_and_metrics_endpoints(client):
     assert readiness.status_code == 200
     assert readiness.json()["database"] == "available"
 
-    metrics = client.get("/metrics")
+    metrics = client.get("/metrics", headers={"X-Metrics-Token": "test-metrics-token"})
     assert metrics.status_code == 200
     assert "securetask_http_requests_total" in metrics.text
+
+
+def test_metrics_requires_token(client):
+    response = client.get("/metrics")
+    assert response.status_code == 401
 
 
 def test_openapi_documents_security_scheme(client):

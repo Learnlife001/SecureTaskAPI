@@ -22,6 +22,7 @@ if config.config_file_name is not None:
 from app.models.audit_log import AuditLog  # noqa: F401
 from app.models.task import Task  # noqa: F401
 from app.models.user import User  # noqa: F401
+from app.models.refresh_token import RefreshToken  # noqa: F401
 from app.db.database import Base
 
 target_metadata = Base.metadata
