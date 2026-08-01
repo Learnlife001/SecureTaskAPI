@@ -1,95 +1,158 @@
-SecureTask API
-SecureTask API is a production ready backend service built with FastAPI, PostgreSQL, Docker, and Microsoft Azure. The project demonstrates secure authentication, containerization, CI/CD automation, and real world cloud deployment practices.
+# SecureTask API
 
-Live Deployment
-Swagger Documentation
-https://securetaskapi-app-bnbybwgdhvhkhefd.eastus-01.azurewebsites.net/docs
+[![CI](https://github.com/Learnlife001/SecureTaskAPI/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Learnlife001/SecureTaskAPI/actions/workflows/ci.yml)
+![Coverage](https://img.shields.io/badge/coverage-93%25-brightgreen)
+[![Live API](https://img.shields.io/badge/Render-live-46E3B7)](https://securetask-api-stys.onrender.com/docs)
+![Python](https://img.shields.io/badge/Python-3.12-3776AB)
 
-Overview
-This project was designed to simulate a real world backend system with authentication, role based authorization, database integration, and automated deployment to the cloud.
-It showcases backend engineering fundamentals and infrastructure level deployment skills rather than just local development.
+SecureTask API is a production-oriented FastAPI backend demonstrating secure
+API design, PostgreSQL persistence, role-based authorization, automated tests,
+observability, containerization, CI/CD and Render deployment automation.
 
-Features
-JWT authentication
-Role based access control
-Secure password hashing
-PostgreSQL database integration
-SQLAlchemy ORM
-Docker containerization
-Azure Container Registry integration
-Azure App Service deployment
-GitHub Actions CI/CD automation
-Environment variable based configuration
+## Architecture
 
-Architecture
-Client requests are handled by a FastAPI application.
-The application communicates with PostgreSQL using SQLAlchemy and psycopg.
-The application runs inside a Docker container.
-The container image is pushed to Azure Container Registry.
-Azure App Service pulls and runs the container image in production.
-GitHub Actions automates build and deployment on every push to the main branch.
+```mermaid
+flowchart LR
+    C[API client] --> R[Rate limiting]
+    R --> A[FastAPI and JWT authentication]
+    A --> Z[RBAC and ownership checks]
+    Z --> S[SQLAlchemy]
+    S --> P[(Render PostgreSQL)]
+    A --> O[JSON logs and audit events]
+    A --> M[Protected metrics]
+    G[GitHub Actions] --> T[Tests and security scans]
+    T --> D[Render Docker deployment]
+    D --> A
+```
 
-Tech Stack
-Backend
-Python
-FastAPI
-SQLAlchemy
-psycopg
+## Production features
 
-Database
-Azure PostgreSQL Flexible Server
+- FastAPI and automatically generated OpenAPI/Swagger documentation
+- PostgreSQL with SQLAlchemy connection pooling and Alembic migrations
+- Short-lived JWT access tokens and rotating refresh tokens
+- Logout through server-side refresh-token revocation
+- Authentication rate limiting with `Retry-After` responses
+- Bcrypt password hashing
+- Explicit `user` and `admin` roles plus resource-ownership checks
+- Request validation, pagination, soft deletion and audit logging
+- Structured JSON logs with request correlation IDs
+- Token-protected request count and latency metrics at `/metrics`
+- Liveness and database-backed readiness probes
+- Non-root Docker image with a container health check
+- Unit and API integration tests with a coverage threshold
+- GitHub Actions validation against PostgreSQL 16
+- Bandit, pip-audit, Trivy and Dependabot security automation
+- Render Blueprint deployment with managed PostgreSQL
+- Platform-generated production secrets and database credentials
 
-Cloud and DevOps
-Docker
-Azure Container Registry
-Azure App Service
-GitHub Actions
+## API endpoints
 
-Security
-JWT
-Password hashing
-Role based authorization
-Environment variable configuration
+| Endpoint | Purpose |
+| --- | --- |
+| `POST /register` | Register a user |
+| `POST /login` | Obtain a JWT access token |
+| `POST /refresh` | Rotate a refresh token and obtain a new token pair |
+| `POST /logout` | Revoke a refresh token |
+| `POST /tasks/` | Create a user-owned task |
+| `GET /tasks/` | List and filter accessible tasks |
+| `PUT /tasks/{id}` | Update an owned task |
+| `DELETE /tasks/{id}` | Soft-delete an owned task |
+| `GET /tasks/admin/users` | List users as an administrator |
+| `GET /tasks/admin/audit-logs` | Review audit events as an administrator |
+| `GET /health/live` | Process liveness check |
+| `GET /health/ready` | Database readiness check |
+| `GET /metrics` | Prometheus-compatible metrics |
 
-Local Development Setup
-Clone the repository
-git clone https://github.com/Learnlife001/securetask-api.git
-cd securetask-api
+Interactive documentation is available at `/docs`; the OpenAPI document is at
+`/openapi.json`.
 
-Create virtual environment
+## Local development with Docker
+
+1. Copy `.env.example` to `.env`.
+2. Replace `POSTGRES_PASSWORD` and `SECURETASK_SECRET_KEY` with strong values.
+3. Ensure the password in `SECURETASK_DATABASE_URL` matches
+   `POSTGRES_PASSWORD`.
+4. Start the complete environment:
+
+```bash
+docker compose up --build
+```
+
+The API is available at <http://localhost:8000>. Docker Compose applies Alembic
+migrations before the local API begins accepting traffic.
+
+## Local development without Docker
+
+```bash
 python -m venv .venv
-..venv\Scripts\activate
+python -m pip install -r requirements.txt
+alembic upgrade head
+uvicorn app.main:app --reload
+```
 
-Install dependencies
-pip install -r requirements.txt
+Set `SECURETASK_DATABASE_URL` and a secret of at least 16 characters in the
+environment before starting the application.
 
-Run locally
-uvicorn app.main:app –reload
+## Testing and quality checks
 
-CI/CD Pipeline
-On every push to the main branch:
-1. GitHub Actions builds the Docker image
-2. The image is pushed to Azure Container Registry
-3. Azure App Service pulls the updated image
-4. The API is automatically redeployed
-This ensures automated and consistent production deployments.
+```bash
+pytest --cov=app --cov-report=term-missing --cov-fail-under=80
+black --check app tests
+docker build -t securetaskapi .
+```
 
-Production Lessons Learned
-Misconfigured environment variables can break production authentication
-Cloud database authentication requires strict configuration
-Container based deployment improves portability and reliability
-CI/CD automation eliminates manual deployment errors
-Logging and monitoring are critical for debugging production systems
+The tests use an in-memory SQLite database by default for speed. CI overrides
+the database URL with PostgreSQL 16, applies every Alembic migration and then
+runs the same test suite.
 
-Future Improvements
-Refresh token implementation
-Rate limiting
-Admin dashboard
-Redis caching
-Monitoring and alerting integration
-  
-Author
-Chigozie Okuma
-GitHub: https://github.com/Learnlife001
-LinkedIn: https://www.linkedin.com/in/cjokuma23/
-Portfolio: https://learnlife-portfolio.vercel.app/
+## Render deployment
+
+The root-level `render.yaml` Blueprint deploys the Docker web service and a
+managed PostgreSQL database in Render's Frankfurt region. Render injects the
+private database connection string and generates a separate JWT secret for the
+production service, so local `.env` values are never uploaded. Paid Render
+services run migrations as a controlled pre-deploy command. Render's Free
+instance type does not support that phase, so the container applies the same
+idempotent Alembic migration before starting its single API process.
+
+Create a new Blueprint in Render, connect this GitHub repository and select the
+root-level `render.yaml`. The API uses `/health/ready` for platform health
+checks, and migrations complete before the container starts serving requests.
+
+- Live documentation: <https://securetask-api-stys.onrender.com/docs>
+- Readiness check: <https://securetask-api-stys.onrender.com/health/ready>
+
+## Database migration history
+
+```mermaid
+flowchart LR
+    A[Initial users and tasks] --> B[Audit logs]
+    B --> C[Explicit user and admin roles]
+    C --> D[Rotating refresh tokens]
+```
+
+## Demonstration
+
+Run the automated deployed-API walkthrough:
+
+```bash
+python scripts/smoke_test.py
+```
+
+It verifies rejected anonymous access, registration, login, task CRUD,
+refresh-token rotation and logout without printing credentials or tokens. See
+[`docs/DEMO.md`](docs/DEMO.md) for the short video recording guide.
+
+![Swagger UI overview](docs/images/swagger-overview.png)
+
+## Security notes
+
+- Never commit `.env`, environment exports or credentials.
+- Store production values in Render's encrypted environment variables or an
+  external secret manager.
+- Keep the metrics token separate from JWT and database credentials.
+- Rotate the JWT secret and database credentials according to organizational
+  policy.
+- Supply the `X-Metrics-Token` header when scraping `/metrics`.
+- Run migrations as a controlled deployment job for multi-replica production
+  environments.

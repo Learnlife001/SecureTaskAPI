@@ -1,8 +1,3 @@
-import sys
-import os
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
 from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
 from alembic import context
@@ -11,10 +6,9 @@ from alembic import context
 # access to the values within the .ini file in use.
 config = context.config
 
-import os
-database_url = os.getenv("DATABASE_URL")
-if database_url:
-    config.set_main_option("sqlalchemy.url", database_url)
+from app.core.config import settings
+
+config.set_main_option("sqlalchemy.url", settings.sqlalchemy_database_url)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -25,10 +19,11 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from models.task import Task
-from models.user import User
-from models.audit_log import AuditLog
-from db.database import Base
+from app.models.audit_log import AuditLog  # noqa: F401
+from app.models.task import Task  # noqa: F401
+from app.models.user import User  # noqa: F401
+from app.models.refresh_token import RefreshToken  # noqa: F401
+from app.db.database import Base
 
 target_metadata = Base.metadata
 
@@ -76,9 +71,7 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()

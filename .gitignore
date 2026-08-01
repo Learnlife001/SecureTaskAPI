@@ -7,9 +7,18 @@ pycache/
 .vscode/
 __pycache__/
 .env.*
+!.env.example
 .venv
 test.db
 *.db
+.coverage*
+htmlcov/
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!terraform.tfvars.example
+crash.log
 
 
 __pycache__/

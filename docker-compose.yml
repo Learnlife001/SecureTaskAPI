@@ -4,7 +4,12 @@ services:
     container_name: securetask_db
     restart: always
     env_file:
-      - .env
+      - ${ENV_FILE:-.env}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -13,13 +18,16 @@ services:
       - securetask_network
   
   api:
-    build: ./app
+    build: .
     container_name: securetask_api
     restart: always
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     env_file:
-      - .env
+      - ${ENV_FILE:-.env}
+    command: >-
+      sh -c "alembic upgrade head && exec uvicorn app.main:app --host 0.0.0.0 --port 8000"
     ports:
       - "8000:8000"
     networks:

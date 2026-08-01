@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
 from app.models.task import Task, TaskStatus
-from app.models.user import User
+from app.models.user import User, UserRole
 from app.schemas.task import TaskCreate, TaskUpdate, TaskResponse
+from app.schemas.user import UserResponse
 from app.routers.auth import get_admin_user, get_current_user
 from app.models.audit_log import AuditLog
 
@@ -15,12 +16,10 @@ router = APIRouter(prefix="/tasks", tags=["Tasks"])
 def create_task(
     task: TaskCreate,
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     new_task = Task(
-        title=task.title,
-        description=task.description,
-        owner_id=current_user.id
+        title=task.title, description=task.description, owner_id=current_user.id
     )
 
     db.add(new_task)
@@ -30,7 +29,7 @@ def create_task(
         action="create",
         entity_type="task",
         entity_id=new_task.id,
-        user_id=current_user.id
+        user_id=current_user.id,
     )
 
     db.add(log)
@@ -42,20 +41,19 @@ def create_task(
 
 @router.get("/", response_model=list[TaskResponse])
 def get_tasks(
-    skip: int = 0,
-    limit: int = 10,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1, le=100),
     status: TaskStatus | None = None,
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
 
-    if current_user.is_admin:
+    if current_user.role == UserRole.admin or current_user.is_admin:
         query = db.query(Task).filter(Task.is_deleted == False)
     else:
         query = db.query(Task).filter(
-        Task.owner_id == current_user.id,
-        Task.is_deleted == False
-    )
+            Task.owner_id == current_user.id, Task.is_deleted == False
+        )
 
     if status:
         query = query.filter(Task.status == status)
@@ -68,17 +66,18 @@ def update_task(
     task_id: int,
     task_update: TaskUpdate,
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
-    task = db.query(Task).filter(
-        Task.id == task_id,
-        Task.is_deleted == False
-    ).first()
+    task = db.query(Task).filter(Task.id == task_id, Task.is_deleted == False).first()
 
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
 
-    if not current_user.is_admin and task.owner_id != current_user.id:
+    if (
+        current_user.role != UserRole.admin
+        and not current_user.is_admin
+        and task.owner_id != current_user.id
+    ):
         raise HTTPException(status_code=403, detail="Not authorized")
 
     if task_update.title is not None:
@@ -86,16 +85,13 @@ def update_task(
 
     if task_update.description is not None:
         task.description = task_update.description
-    
+
     if task_update.status is not None:
         task.status = task_update.status
 
     log = AuditLog(
-    action="update",
-    entity_type="task",
-    entity_id=task.id,
-    user_id=current_user.id
-)
+        action="update", entity_type="task", entity_id=task.id, user_id=current_user.id
+    )
 
     db.add(log)
     db.commit()
@@ -108,23 +104,24 @@ def update_task(
 def delete_task(
     task_id: int,
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     task = db.query(Task).filter(Task.id == task_id).first()
 
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
 
-    if not current_user.is_admin and task.owner_id != current_user.id:
+    if (
+        current_user.role != UserRole.admin
+        and not current_user.is_admin
+        and task.owner_id != current_user.id
+    ):
         raise HTTPException(status_code=403, detail="Not authorized")
 
     task.is_deleted = True
 
     log = AuditLog(
-        action="delete",
-        entity_type="task",
-        entity_id=task.id,
-        user_id=current_user.id
+        action="delete", entity_type="task", entity_id=task.id, user_id=current_user.id
     )
 
     db.add(log)
@@ -132,23 +129,19 @@ def delete_task(
 
     return {"message": "Task soft deleted"}
 
-@router.get("/admin/users", tags=["Admin"])
+
+@router.get("/admin/users", tags=["Admin"], response_model=list[UserResponse])
 def list_all_users(
-    admin: User = Depends(get_admin_user),
-    db: Session = Depends(get_db)
+    admin: User = Depends(get_admin_user), db: Session = Depends(get_db)
 ):
     return db.query(User).all()
 
+
 @router.put("/admin/restore/{task_id}", tags=["Admin"])
 def restore_task(
-    task_id: int,
-    admin: User = Depends(get_admin_user),
-    db: Session = Depends(get_db)
+    task_id: int, admin: User = Depends(get_admin_user), db: Session = Depends(get_db)
 ):
-    task = db.query(Task).filter(
-        Task.id == task_id, 
-        Task.is_deleted == True
-        ).first()
+    task = db.query(Task).filter(Task.id == task_id, Task.is_deleted == True).first()
 
     if not task:
         raise HTTPException(status_code=404, detail="Deleted task not found")
@@ -156,10 +149,7 @@ def restore_task(
     task.is_deleted = False
 
     log = AuditLog(
-        action="restore",
-        entity_type="task",
-        entity_id=task.id,
-        user_id=admin.id
+        action="restore", entity_type="task", entity_id=task.id, user_id=admin.id
     )
 
     db.add(log)
@@ -168,9 +158,9 @@ def restore_task(
 
     return {"message": "Task restored"}
 
+
 @router.get("/admin/audit-logs", tags=["Admin"])
 def get_audit_logs(
-    admin: User = Depends(get_admin_user),
-    db: Session = Depends(get_db)
+    admin: User = Depends(get_admin_user), db: Session = Depends(get_db)
 ):
     return db.query(AuditLog).all()

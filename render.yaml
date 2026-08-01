@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: securetask-api
+    runtime: docker
+    region: frankfurt
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    preDeployCommand: alembic upgrade head
+    healthCheckPath: /health/ready
+    envVars:
+      - key: SECURETASK_DATABASE_URL
+        fromDatabase:
+          name: securetask-db
+          property: connectionString
+      - key: SECURETASK_SECRET_KEY
+        generateValue: true
+      - key: SECURETASK_ALGORITHM
+        value: HS256
+      - key: SECURETASK_ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "30"
+      - key: SECURETASK_REFRESH_TOKEN_EXPIRE_DAYS
+        value: "7"
+      - key: SECURETASK_METRICS_TOKEN
+        generateValue: true
+      - key: SECURETASK_AUTH_RATE_LIMIT_REQUESTS
+        value: "10"
+      - key: SECURETASK_AUTH_RATE_LIMIT_WINDOW_SECONDS
+        value: "60"
+      - key: SECURETASK_ENVIRONMENT
+        value: production
+      - key: SECURETASK_DEBUG
+        value: "false"
+
+databases:
+  - name: securetask-db
+    region: frankfurt
+    plan: free
+    ipAllowList: []

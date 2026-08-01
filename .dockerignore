@@ -1,0 +1,14 @@
+.git
+.github
+.venv
+.pytest_cache
+__pycache__
+**/__pycache__
+*.py[cod]
+.env
+.env.*
+!.env.example
+*.db
+tests
+postman
+.postman
