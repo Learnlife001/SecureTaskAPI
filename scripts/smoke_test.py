@@ -42,9 +42,7 @@ def parse_payload(payload):
 def expect(label, actual, expected, payload=None):
     if actual != expected:
         detail = f"; response={payload!r}" if payload is not None else ""
-        raise RuntimeError(
-            f"{label}: expected {expected}, received {actual}{detail}"
-        )
+        raise RuntimeError(f"{label}: expected {expected}, received {actual}{detail}")
     print(f"PASS  {label}: HTTP {actual}")
 
 
