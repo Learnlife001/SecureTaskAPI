@@ -110,12 +110,14 @@ runs the same test suite.
 The root-level `render.yaml` Blueprint deploys the Docker web service and a
 managed PostgreSQL database in Render's Frankfurt region. Render injects the
 private database connection string and generates a separate JWT secret for the
-production service, so local `.env` values are never uploaded. Database
-migrations run as a controlled Render pre-deploy command.
+production service, so local `.env` values are never uploaded. Paid Render
+services run migrations as a controlled pre-deploy command. Render's Free
+instance type does not support that phase, so the container applies the same
+idempotent Alembic migration before starting its single API process.
 
 Create a new Blueprint in Render, connect this GitHub repository and select the
 root-level `render.yaml`. The API uses `/health/ready` for platform health
-checks, and migrations run before the container starts serving requests.
+checks, and migrations complete before the container starts serving requests.
 
 - Live documentation: <https://securetask-api-stys.onrender.com/docs>
 - Readiness check: <https://securetask-api-stys.onrender.com/health/ready>

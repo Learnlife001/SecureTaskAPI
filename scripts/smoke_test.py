@@ -24,15 +24,27 @@ def call(base_url, method, path, *, json_body=None, form_body=None, token=None):
     try:
         with urlopen(request, timeout=90) as response:
             payload = response.read().decode()
-            return response.status, json.loads(payload) if payload else None
+            return response.status, parse_payload(payload)
     except HTTPError as error:
         payload = error.read().decode()
-        return error.code, json.loads(payload) if payload else None
+        return error.code, parse_payload(payload)
 
 
-def expect(label, actual, expected):
+def parse_payload(payload):
+    if not payload:
+        return None
+    try:
+        return json.loads(payload)
+    except json.JSONDecodeError:
+        return {"non_json_response": payload[:200]}
+
+
+def expect(label, actual, expected, payload=None):
     if actual != expected:
-        raise RuntimeError(f"{label}: expected {expected}, received {actual}")
+        detail = f"; response={payload!r}" if payload is not None else ""
+        raise RuntimeError(
+            f"{label}: expected {expected}, received {actual}{detail}"
+        )
     print(f"PASS  {label}: HTTP {actual}")
 
 
@@ -61,7 +73,7 @@ def main():
         "/login",
         form_body={"username": email, "password": password},
     )
-    expect("login", status, 200)
+    expect("login", status, 200, tokens)
     access_token = tokens["access_token"]
     refresh_token = tokens["refresh_token"]
 
