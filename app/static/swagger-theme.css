@@ -13,9 +13,7 @@ html {
 }
 
 body {
-  background:
-    radial-gradient(circle at 92% 0%, rgba(29, 201, 174, 0.18), transparent 29rem),
-    linear-gradient(125deg, #07131f 0 21rem, var(--st-surface) 21rem);
+  background: var(--st-ink);
   color: var(--st-ink);
 }
 
@@ -72,6 +70,12 @@ body {
 .swagger-ui .info {
   margin: 0;
   padding: clamp(3.5rem, 8vw, 7rem) 2.5rem 3.25rem;
+}
+
+.swagger-ui .information-container {
+  background:
+    radial-gradient(circle at 92% 0%, rgba(29, 201, 174, 0.18), transparent 29rem),
+    var(--st-surface);
 }
 
 .swagger-ui .info::before {
@@ -193,10 +197,6 @@ body {
 }
 
 @media (max-width: 700px) {
-  body {
-    background: var(--st-surface);
-  }
-
   .swagger-ui .topbar,
   .swagger-ui .topbar-wrapper {
     min-height: 64px;
