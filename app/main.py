@@ -1,7 +1,11 @@
 import secrets
+from pathlib import Path
 
 from fastapi import FastAPI, Header, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.docs import get_swagger_ui_html
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
 from app.core.config import settings
@@ -12,11 +16,20 @@ from app.routers import auth, tasks
 
 configure_logging()
 
+APP_DIRECTORY = Path(__file__).resolve().parent
+
 app = FastAPI(
     title="SecureTask API",
     version=settings.VERSION,
     description="Production-ready task API with JWT authentication, RBAC, audit logging and observability.",
     contact={"name": "SecureTask API Maintainers"},
+    docs_url=None,
+)
+
+app.mount(
+    "/assets",
+    StaticFiles(directory=APP_DIRECTORY / "static"),
+    name="assets",
 )
 
 app.add_middleware(ObservabilityMiddleware)
@@ -31,6 +44,23 @@ if settings.CORS_ORIGINS:
 
 app.include_router(auth.router)
 app.include_router(tasks.router)
+
+
+@app.get("/docs", include_in_schema=False)
+def documentation() -> HTMLResponse:
+    """Serve Swagger UI with the SecureTask developer-portal theme."""
+    swagger_ui = get_swagger_ui_html(
+        openapi_url=app.openapi_url,
+        title=f"{app.title} | Developer Portal",
+        swagger_css_url="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css",
+        swagger_ui_parameters={"persistAuthorization": True},
+    )
+    html = swagger_ui.body.decode("utf-8")
+    html = html.replace(
+        "</head>",
+        '<link rel="stylesheet" href="/assets/swagger-theme.css">\n</head>',
+    )
+    return HTMLResponse(content=html)
 
 
 @app.get("/", tags=["Health"])

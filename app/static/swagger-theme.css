@@ -1,0 +1,212 @@
+:root {
+  --st-ink: #07131f;
+  --st-panel: #0d2232;
+  --st-surface: #f5f4ee;
+  --st-line: #ccd5d3;
+  --st-teal: #1dc9ae;
+  --st-gold: #f1be4e;
+  --st-muted: #63716e;
+}
+
+html {
+  background: var(--st-ink);
+}
+
+body {
+  background:
+    radial-gradient(circle at 92% 0%, rgba(29, 201, 174, 0.18), transparent 29rem),
+    linear-gradient(125deg, #07131f 0 21rem, var(--st-surface) 21rem);
+  color: var(--st-ink);
+}
+
+.swagger-ui {
+  color: var(--st-ink);
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+}
+
+.swagger-ui .topbar {
+  min-height: 76px;
+  padding: 0 4vw;
+  background: rgba(7, 19, 31, 0.94);
+  border-bottom: 1px solid rgba(29, 201, 174, 0.38);
+}
+
+.swagger-ui .topbar-wrapper {
+  max-width: 1240px;
+  min-height: 76px;
+  margin: 0 auto;
+}
+
+.swagger-ui .topbar-wrapper > a {
+  display: none;
+}
+
+.swagger-ui .topbar-wrapper::before {
+  color: #f5f4ee;
+  content: "SECURETASK  /  DEVELOPER PORTAL";
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-weight: 700;
+  letter-spacing: 0.09em;
+}
+
+.swagger-ui .topbar .download-url-wrapper {
+  margin-left: auto;
+}
+
+.swagger-ui .topbar .download-url-wrapper input[type=text] {
+  min-width: 240px;
+  background: #102c3b;
+  border: 1px solid #3f6570;
+  border-radius: 4px 0 0 4px;
+  color: #f5f4ee;
+}
+
+.swagger-ui .topbar .download-url-wrapper .download-url-button {
+  background: var(--st-teal);
+  border-radius: 0 4px 4px 0;
+  color: #06202c;
+  font-weight: 800;
+}
+
+.swagger-ui .info {
+  margin: 0;
+  padding: clamp(3.5rem, 8vw, 7rem) 2.5rem 3.25rem;
+}
+
+.swagger-ui .info::before {
+  display: block;
+  margin-bottom: 1rem;
+  color: #0d8076;
+  content: "PRODUCTION API  •  JWT  •  RBAC  •  AUDIT TRAIL";
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.swagger-ui .info .title {
+  color: var(--st-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.8rem, 7vw, 5.8rem);
+  font-weight: 700;
+  letter-spacing: -0.055em;
+  line-height: 0.94;
+}
+
+.swagger-ui .info .title small {
+  margin-left: 0.6rem;
+  padding: 0.25rem 0.55rem;
+  background: var(--st-gold);
+  border-radius: 3px;
+  color: var(--st-ink);
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+}
+
+.swagger-ui .info p,
+.swagger-ui .info li,
+.swagger-ui .info table {
+  color: #455451;
+  font-size: 1.02rem;
+}
+
+.swagger-ui .info .base-url {
+  color: #117e73;
+}
+
+.swagger-ui .scheme-container {
+  margin: 0;
+  padding: 1.4rem max(2.5rem, calc((100vw - 1160px) / 2));
+  background: var(--st-panel);
+  box-shadow: none;
+}
+
+.swagger-ui .auth-wrapper .authorize {
+  border: 2px solid var(--st-teal);
+  border-radius: 3px;
+  color: var(--st-teal);
+  font-weight: 800;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.swagger-ui .auth-wrapper .authorize:hover {
+  background: var(--st-teal);
+  color: var(--st-ink);
+}
+
+.swagger-ui .wrapper {
+  max-width: 1160px;
+  padding: 0 2.5rem 5rem;
+}
+
+.swagger-ui .opblock-tag {
+  margin-top: 2.5rem;
+  border-bottom: 2px solid var(--st-line);
+  color: var(--st-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.8rem;
+}
+
+.swagger-ui .opblock {
+  margin: 0.75rem 0;
+  border-radius: 3px;
+  box-shadow: none;
+}
+
+.swagger-ui .opblock.opblock-post {
+  border-color: #20a98f;
+  background: rgba(32, 169, 143, 0.09);
+}
+
+.swagger-ui .opblock.opblock-get {
+  border-color: #278fc5;
+  background: rgba(39, 143, 197, 0.08);
+}
+
+.swagger-ui .opblock.opblock-put,
+.swagger-ui .opblock.opblock-delete {
+  border-color: #d39a2c;
+  background: rgba(241, 190, 78, 0.1);
+}
+
+.swagger-ui .opblock .opblock-summary-method {
+  min-width: 86px;
+  border-radius: 2px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+.swagger-ui .btn.execute {
+  background: var(--st-teal);
+  border-color: var(--st-teal);
+  border-radius: 3px;
+  color: var(--st-ink);
+  font-weight: 800;
+}
+
+.swagger-ui .model-box,
+.swagger-ui section.models {
+  background: #edf0eb;
+  border-color: var(--st-line);
+}
+
+@media (max-width: 700px) {
+  body {
+    background: var(--st-surface);
+  }
+
+  .swagger-ui .topbar,
+  .swagger-ui .topbar-wrapper {
+    min-height: 64px;
+  }
+
+  .swagger-ui .topbar .download-url-wrapper {
+    display: none;
+  }
+
+  .swagger-ui .wrapper {
+    padding: 0 1rem 3rem;
+  }
+}

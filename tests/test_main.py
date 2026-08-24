@@ -24,3 +24,10 @@ def test_openapi_documents_security_scheme(client):
     schema = client.get("/openapi.json").json()
     assert schema["info"]["title"] == "SecureTask API"
     assert "OAuth2PasswordBearer" in schema["components"]["securitySchemes"]
+
+
+def test_docs_serve_the_securetask_theme(client):
+    response = client.get("/docs")
+    assert response.status_code == 200
+    assert 'href="/assets/swagger-theme.css"' in response.text
+    assert "persistAuthorization" in response.text

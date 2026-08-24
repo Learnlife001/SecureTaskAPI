@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/Learnlife001/SecureTaskAPI/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Learnlife001/SecureTaskAPI/actions/workflows/ci.yml)
 ![Coverage](https://img.shields.io/badge/coverage-93%25-brightgreen)
-[![Live API](https://img.shields.io/badge/Render-live-46E3B7)](https://securetask-api-stys.onrender.com/docs)
+[![Live API](https://img.shields.io/badge/Render-live-46E3B7)](https://sta.greglabs.nl/docs)
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB)
 
 SecureTask API is a production-oriented FastAPI backend demonstrating secure
@@ -64,7 +64,9 @@ flowchart LR
 | `GET /metrics` | Prometheus-compatible metrics |
 
 Interactive documentation is available at `/docs`; the OpenAPI document is at
-`/openapi.json`.
+`/openapi.json`. The Swagger interface uses a dedicated SecureTask developer
+portal theme while retaining the standard OpenAPI controls and authorization
+flow.
 
 ## Local development with Docker
 
@@ -119,8 +121,9 @@ Create a new Blueprint in Render, connect this GitHub repository and select the
 root-level `render.yaml`. The API uses `/health/ready` for platform health
 checks, and migrations complete before the container starts serving requests.
 
-- Live documentation: <https://securetask-api-stys.onrender.com/docs>
-- Readiness check: <https://securetask-api-stys.onrender.com/health/ready>
+- Live documentation: <https://sta.greglabs.nl/docs>
+- Readiness check: <https://sta.greglabs.nl/health/ready>
+- Render fallback: <https://securetask-api-stys.onrender.com/docs>
 
 ## Database migration history
 
