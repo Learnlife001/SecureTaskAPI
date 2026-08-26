@@ -148,6 +148,15 @@ refresh-token rotation and logout without printing credentials or tokens. See
 
 ![Swagger UI overview](docs/images/swagger-overview.png)
 
+## Open source and production use
+
+This project is available under the [MIT License](LICENSE) as a reference
+implementation. It is suitable for learning, demonstrations, and adaptation,
+but production use requires an independent review of security, privacy,
+availability, backup, and operational requirements. Never commit `.env` files,
+credentials, tokens, or real user data. See [SECURITY.md](SECURITY.md) for
+responsible vulnerability reporting guidance.
+
 ## Security notes
 
 - Never commit `.env`, environment exports or credentials.
