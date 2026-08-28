@@ -10,9 +10,7 @@ services:
     healthCheckPath: /health/ready
     envVars:
       - key: SECURETASK_DATABASE_URL
-        fromDatabase:
-          name: securetask-db
-          property: connectionString
+        sync: false
       - key: SECURETASK_SECRET_KEY
         generateValue: true
       - key: SECURETASK_ALGORITHM
@@ -31,9 +29,3 @@ services:
         value: production
       - key: SECURETASK_DEBUG
         value: "false"
-
-databases:
-  - name: securetask-db
-    region: frankfurt
-    plan: free
-    ipAllowList: []
