@@ -151,15 +151,27 @@ body {
 
 .swagger-ui .wrapper {
   max-width: 1160px;
-  padding: 0 2.5rem 5rem;
+  padding: 0 2.5rem 1rem;
+}
+
+.swagger-ui .opblock-tag-section {
+  gap: 0;
+  margin: 0 !important;
+  min-height: 0;
+  padding: 0 !important;
 }
 
 .swagger-ui .opblock-tag {
-  margin-top: 1.5rem;
+  margin: 0.5rem 0 0;
+  padding: 0.55rem 0;
   border-bottom: 2px solid var(--st-line);
-  color: var(--st-ink);
+  color: #f5f4ee;
   font-family: Georgia, "Times New Roman", serif;
   font-size: 1.8rem;
+}
+
+.swagger-ui .opblock-tag-section + .opblock-tag-section .opblock-tag {
+  margin-top: 1rem;
 }
 
 .swagger-ui .opblock {
@@ -204,6 +216,7 @@ body {
 .swagger-ui section.models {
   background: #edf0eb;
   border-color: var(--st-line);
+  margin: 1rem 0;
 }
 
 @media (max-width: 700px) {
@@ -217,7 +230,7 @@ body {
   }
 
   .swagger-ui .wrapper {
-    padding: 0 1rem 3rem;
+    padding: 0 1rem 1rem;
   }
 }
 
