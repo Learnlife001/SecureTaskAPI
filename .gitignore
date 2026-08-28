@@ -20,6 +20,11 @@ htmlcov/
 !terraform.tfvars.example
 crash.log
 
+# Local database-recovery exports must never be committed.
+backups/
+*.dump
+*.backup
+
 
 __pycache__/
 *.pyd
