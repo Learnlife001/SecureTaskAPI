@@ -17,7 +17,7 @@ flowchart LR
     R --> A[FastAPI and JWT authentication]
     A --> Z[RBAC and ownership checks]
     Z --> S[SQLAlchemy]
-    S --> P[(Render PostgreSQL)]
+    S --> P[(Neon PostgreSQL)]
     A --> O[JSON logs and audit events]
     A --> M[Protected metrics]
     G[GitHub Actions] --> T[Tests and security scans]
@@ -42,7 +42,7 @@ flowchart LR
 - Unit and API integration tests with a coverage threshold
 - GitHub Actions validation against PostgreSQL 16
 - Bandit, pip-audit, Trivy and Dependabot security automation
-- Render Blueprint deployment with managed PostgreSQL
+- Render Blueprint deployment with Neon PostgreSQL
 - Platform-generated production secrets and database credentials
 
 ## API endpoints
@@ -109,13 +109,13 @@ runs the same test suite.
 
 ## Render deployment
 
-The root-level `render.yaml` Blueprint deploys the Docker web service and a
-managed PostgreSQL database in Render's Frankfurt region. Render injects the
-private database connection string and generates a separate JWT secret for the
-production service, so local `.env` values are never uploaded. Paid Render
-services run migrations as a controlled pre-deploy command. Render's Free
-instance type does not support that phase, so the container applies the same
-idempotent Alembic migration before starting its single API process.
+The root-level `render.yaml` Blueprint deploys the Docker web service in
+Render's Frankfurt region. Production PostgreSQL is hosted by Neon; its
+connection string is stored only as Render's encrypted
+`SECURETASK_DATABASE_URL` environment variable (`sync: false` in the
+Blueprint). Local `.env` values are never uploaded. The container applies the
+idempotent Alembic migrations before it starts the API process, which is
+compatible with Render's Free instance type.
 
 Create a new Blueprint in Render, connect this GitHub repository and select the
 root-level `render.yaml`. The API uses `/health/ready` for platform health
@@ -124,6 +124,13 @@ checks, and migrations complete before the container starts serving requests.
 - Live documentation: <https://sta.greglabs.nl/docs>
 - Readiness check: <https://sta.greglabs.nl/health/ready>
 - Render fallback: <https://securetask-api-stys.onrender.com/docs>
+
+## Database recovery
+
+Before storing real user data, follow the documented Neon snapshot and
+recovery process in [`docs/NEON_RECOVERY.md`](docs/NEON_RECOVERY.md). Local
+`pg_dump` exports belong in the ignored `backups/` directory and must be stored
+encrypted outside this repository.
 
 ## Database migration history
 

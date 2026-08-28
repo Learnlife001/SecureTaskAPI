@@ -6,7 +6,6 @@ services:
     plan: free
     dockerfilePath: ./Dockerfile
     dockerContext: .
-    preDeployCommand: alembic upgrade head
     healthCheckPath: /health/ready
     envVars:
       - key: SECURETASK_DATABASE_URL
