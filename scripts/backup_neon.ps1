@@ -18,4 +18,12 @@ $outputPath = Join-Path $OutputDirectory "securetask-neon-$timestamp.dump"
 
 pg_dump --format=custom --no-owner --file=$outputPath $env:NEON_BACKUP_DATABASE_URL
 
+if ($LASTEXITCODE -ne 0) {
+    if (Test-Path -LiteralPath $outputPath) {
+        Remove-Item -LiteralPath $outputPath -Force
+    }
+
+    throw "pg_dump failed with exit code $LASTEXITCODE. No backup was created."
+}
+
 Write-Host "Backup created at $outputPath. Encrypt and store it outside this repository."
