@@ -30,7 +30,7 @@ body {
 }
 
 .swagger-ui .topbar-wrapper {
-  max-width: 1240px;
+  max-width: none;
   min-height: 76px;
   margin: 0 auto;
 }
@@ -69,7 +69,11 @@ body {
 
 .swagger-ui .info {
   margin: 0 !important;
-  padding: clamp(1.25rem, 2.5vw, 2rem) 2.5rem 0.75rem;
+  padding: clamp(1.25rem, 2.5vw, 2rem) clamp(1.25rem, 6vw, 9rem) 0.75rem;
+}
+
+.swagger-ui .information-container .wrapper {
+  padding: 0;
 }
 
 .swagger-ui .information-container {
@@ -92,7 +96,7 @@ body {
 .swagger-ui .info .title {
   color: var(--st-ink);
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(2.8rem, 7vw, 5.8rem);
+  font-size: clamp(2.8rem, 5.8vw, 8rem);
   font-weight: 700;
   letter-spacing: -0.055em;
   line-height: 0.94;
@@ -113,7 +117,7 @@ body {
 .swagger-ui .info li,
 .swagger-ui .info table {
   color: #455451;
-  font-size: 1.02rem;
+  font-size: clamp(1rem, 0.95vw, 1.2rem);
 }
 
 .swagger-ui .info p:last-child {
@@ -126,7 +130,7 @@ body {
 
 .swagger-ui .scheme-container {
   margin: 0;
-  padding: 1rem max(2.5rem, calc((100vw - 1160px) / 2));
+  padding: 1rem clamp(1rem, 4vw, 6rem);
   background: var(--st-panel);
   box-shadow: none;
 }
@@ -150,8 +154,8 @@ body {
 }
 
 .swagger-ui .wrapper {
-  max-width: 1160px;
-  padding: 0 2.5rem 1rem;
+  max-width: none;
+  padding: 0 clamp(1rem, 4vw, 6rem) 1rem;
 }
 
 .swagger-ui .opblock-tag-section {
@@ -167,7 +171,7 @@ body {
   border-bottom: 2px solid var(--st-line);
   color: #f5f4ee;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 1.8rem;
+  font-size: clamp(1.55rem, 1.8vw, 2.25rem);
 }
 
 .swagger-ui .opblock-tag-section + .opblock-tag-section .opblock-tag {
