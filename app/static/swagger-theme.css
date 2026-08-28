@@ -68,14 +68,15 @@ body {
 }
 
 .swagger-ui .info {
-  margin: 0;
-  padding: clamp(2rem, 4.5vw, 3.75rem) 2.5rem 2rem;
+  margin: 0 !important;
+  padding: clamp(1.25rem, 2.5vw, 2rem) 2.5rem 0.75rem;
 }
 
 .swagger-ui .information-container {
   background:
     radial-gradient(circle at 92% 0%, rgba(29, 201, 174, 0.18), transparent 29rem),
     var(--st-surface);
+  min-height: 0;
 }
 
 .swagger-ui .info::before {
@@ -113,6 +114,10 @@ body {
 .swagger-ui .info table {
   color: #455451;
   font-size: 1.02rem;
+}
+
+.swagger-ui .info p:last-child {
+  margin-bottom: 0;
 }
 
 .swagger-ui .info .base-url {
@@ -213,5 +218,12 @@ body {
 
   .swagger-ui .wrapper {
     padding: 0 1rem 3rem;
+  }
+}
+
+@media (min-width: 900px) {
+  .swagger-ui .information-container {
+    height: 290px;
+    overflow: hidden;
   }
 }
