@@ -1,13 +1,1 @@
-fastapi
-uvicorn[standard]
-psycopg[binary]>=3.2.10,<4
-sqlalchemy
-passlib[bcrypt]
-PyJWT==2.13.0
-passlib[bcrypt]
-email-validator
-bcrypt==3.2.2
-email-validator
-python-multipart
-pydantic-settings
-alembic
+-r ../requirements.txt

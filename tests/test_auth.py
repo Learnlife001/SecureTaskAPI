@@ -74,6 +74,24 @@ def test_refresh_token_cannot_access_protected_api(client):
     assert response.status_code == 401
 
 
+def test_tampered_access_token_is_rejected(client):
+    client.post(
+        "/register",
+        json={"email": "tampered-token@example.com", "password": "correct-horse"},
+    )
+    login = client.post(
+        "/login",
+        data={"username": "tampered-token@example.com", "password": "correct-horse"},
+    )
+    token = login.json()["access_token"]
+    tampered_token = f"{token[:-1]}{'a' if token[-1] != 'a' else 'b'}"
+
+    response = client.get(
+        "/tasks/", headers={"Authorization": f"Bearer {tampered_token}"}
+    )
+    assert response.status_code == 401
+
+
 def test_invalid_refresh_token_is_rejected(client):
     response = client.post(
         "/refresh", json={"refresh_token": "not-a-valid-refresh-token"}
