@@ -1,4 +1,6 @@
-FROM python:3.12-slim
+# Keep the OS release explicit so `python:3.12-slim` cannot silently move to
+# a new Debian release with a different security-patch lifecycle.
+FROM python:3.12-slim-bookworm
 
 WORKDIR /app
 
